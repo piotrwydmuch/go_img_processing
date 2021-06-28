@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>elo</title>
+    <link rel="icon" type="image/png" href="./grid/favicon.ico">
+    <meta charset="utf-8"/>
+    <script src="wasm_exec.js"></script>
+    <script>
+        const go = new Go();
+        let mod, inst;
+        let imageType;
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+        }).catch((err) => {
+            console.error(err);
+        });
+
+        // displayImage takes the pointer to the target image in the wasm linear memory
+		// and its length. Gets the resulting byte slice and creates an image blob.
+		function displayImage(buf) {
+			let blob = new Blob([buf], {'type': imageType});
+			document.getElementById('targetImg').src = URL.createObjectURL(blob);
+		}
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row" style="margin-top: 20px">
+        Start image:
+        <img src="/lenna.png" alt="Start image">
+        Test:
+        <image id="targetImg" class="image" />
+    </div>
+</div>
+</body>
+</html>
