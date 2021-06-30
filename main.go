@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	"image/png"
 	"log"
 	"math"
@@ -11,9 +12,11 @@ import (
 	"strconv"
 	"sync"
 	"syscall/js"
+	"time"
 
 	"github.com/anthonynsimon/bild/imgio"
 	// "github.com/anthonynsimon/bild/transform"
+	"github.com/anthonynsimon/bild/adjust"
 	"github.com/anthonynsimon/bild/clone"
 	"github.com/anthonynsimon/bild/convolution"
 	"github.com/anthonynsimon/bild/parallel"
@@ -30,14 +33,32 @@ func main() {
 	}
 	
 	//JavaScript func declaratrion - calling from DOM is possible now
-	var cb js.Func
-	cb = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		EditPhoto(OriginalImgRGBA)
+	var gaussianFunc js.Func
+	gaussianFunc = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		UseGaussian(OriginalImgRGBA)
+		//gaussianFunc.Release() // release the function if the button will not be clicked again
+		return nil
+	})
+	js.Global().Get("document").Call("getElementById", "btn-1").Call("addEventListener", "click", gaussianFunc)
+	
+	var grayscaleFunc js.Func
+	grayscaleFunc = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		UseGrayscale(OriginalImgRGBA)
 		//cb.Release() // release the function if the button will not be clicked again
 		return nil
 	})
-	js.Global().Get("document").Call("getElementById", "myButton").Call("addEventListener", "click", cb)
+	js.Global().Get("document").Call("getElementById", "btn-2").Call("addEventListener", "click", grayscaleFunc)
+
 	
+	var invertFunc js.Func
+	invertFunc = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		UseInvert(OriginalImgRGBA)
+		//cb.Release() // release the function if the button will not be clicked again
+		return nil
+	})
+	js.Global().Get("document").Call("getElementById", "btn-3").Call("addEventListener", "click", invertFunc)
+	
+		
 	//App is ready for user actions
 	fmt.Println("Rdy")	
 	
@@ -47,26 +68,52 @@ func main() {
 	wg.Wait()
 }
 
+func UseGaussian(img image.Image) {
+	newImgRGBA := Gaussian(img, 9.0)
+	EditPhoto(newImgRGBA)
+}
+
+func UseGrayscale(img image.Image) {
+	newImgRGBA := Grayscale(img)
+	EditPhoto(newImgRGBA)
+}
+
+func UseInvert(img image.Image) {
+	newImgRGBA := Invert(img)
+	EditPhoto(newImgRGBA)
+}
+
+
 func EditPhoto(img image.Image) {
-		// Create grayscale of img
-		newImgRGBA := Gaussian(img, 9.0)
-		//fmt.Println(newImgRGBA)
+	//Measuring execution time 
+	start := time.Now()
 	
-		buf := new(bytes.Buffer)
-		encoder := imgio.PNGEncoder()
-		encoder(buf, newImgRGBA)
-		newBitmap := buf.Bytes()
-		//fmt.Println("buf bytes: ", newBitmap)
+	//bitmap create
+	buf := new(bytes.Buffer)
+	encoder := imgio.PNGEncoder()
+	encoder(buf, img)
+	newBitmap := buf.Bytes()
 	
-		// Type of new bitmap in Go- []uint8
-		// fmt.Println(reflect.TypeOf(newBitmap));
+	//get the browser console object
+	console := js.Global().Get("console")
 	
-		console := js.Global().Get("console")
+	//bitman -> base64 result needed for representation of processed image
+	dst := js.Global().Get("Uint8Array").New(len(newBitmap))
+	n := js.CopyBytesToJS(dst, newBitmap)
+	console.Call("log", "bytes copied:", strconv.Itoa(n))
+	js.Global().Call("displayImage", dst)
 	
-		dst := js.Global().Get("Uint8Array").New(len(newBitmap))
-		n := js.CopyBytesToJS(dst, newBitmap)
-		console.Call("log", "bytes copied:", strconv.Itoa(n))
-		js.Global().Call("displayImage", dst)
+	fmt.Println("t: ", time.Since(start))
+}
+
+func Invert(src image.Image) *image.RGBA {
+	fn := func(c color.RGBA) color.RGBA {
+		return color.RGBA{255 - c.R, 255 - c.G, 255 - c.B, c.A}
+	}
+
+	img := adjust.Apply(src, fn)
+
+	return img
 }
 
 func Gaussian(src image.Image, radius float64) *image.RGBA {
