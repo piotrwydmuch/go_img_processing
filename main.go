@@ -60,7 +60,7 @@ func main() {
 	
 		
 	//App is ready for user actions
-	fmt.Println("Rdy")	
+	fmt.Println("App ready.")	
 	
 	//To wait for multiple goroutines to finish, we can use a wait group
 	wg := sync.WaitGroup{}
