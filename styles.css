@@ -1,4 +1,7 @@
 .container {}
-.content {}
+.content {
+    display: flex;
+    flex-direction: column;
+}
 .start-container {}  
 .result-container {}
