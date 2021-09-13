@@ -49,7 +49,6 @@ func main() {
 	})
 	js.Global().Get("document").Call("getElementById", "btn-2").Call("addEventListener", "click", grayscaleFunc)
 
-	
 	var invertFunc js.Func
 	invertFunc = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		UseInvert(OriginalImgRGBA)
@@ -57,6 +56,14 @@ func main() {
 		return nil
 	})
 	js.Global().Get("document").Call("getElementById", "btn-3").Call("addEventListener", "click", invertFunc)
+	
+	var edgeDetection js.Func
+	edgeDetection = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		UseEdgeDetection(OriginalImgRGBA)
+		//cb.Release() // release the function if the button will not be clicked again
+		return nil
+	})
+	js.Global().Get("document").Call("getElementById", "btn-4").Call("addEventListener", "click", edgeDetection)
 	
 		
 	//App is ready for user actions
@@ -69,24 +76,41 @@ func main() {
 }
 
 func UseGaussian(img image.Image) {
+	start := time.Now()
 	newImgRGBA := Gaussian(img, 9.0)
 	EditPhoto(newImgRGBA)
+	fmt.Println("t: ", time.Since(start))
+
 }
 
 func UseGrayscale(img image.Image) {
+	start := time.Now()
 	newImgRGBA := Grayscale(img)
 	EditPhoto(newImgRGBA)
+	fmt.Println("t: ", time.Since(start))
+
 }
 
 func UseInvert(img image.Image) {
+	start := time.Now()
 	newImgRGBA := Invert(img)
 	EditPhoto(newImgRGBA)
+	fmt.Println("t: ", time.Since(start))
+
+}
+
+func UseEdgeDetection(img image.Image) {
+	start := time.Now()
+	newImgRGBA := EdgeDetection(img, 1.0)
+	EditPhoto(newImgRGBA)
+	fmt.Println("t: ", time.Since(start))
+
 }
 
 
 func EditPhoto(img image.Image) {
 	//Measuring execution time 
-	start := time.Now()
+	// start := time.Now()
 	
 	//bitmap create
 	buf := new(bytes.Buffer)
@@ -103,7 +127,7 @@ func EditPhoto(img image.Image) {
 	console.Call("log", "bytes copied:", strconv.Itoa(n))
 	js.Global().Call("displayImage", dst)
 	
-	fmt.Println("t: ", time.Since(start))
+	// fmt.Println("t: ", time.Since(start))
 }
 
 func Invert(src image.Image) *image.RGBA {
@@ -169,3 +193,24 @@ func Grayscale(img image.Image) *image.RGBA {
 	return GrayscaleWithWeights(img, 0.3, 0.6, 0.1)
 }
 
+// EdgeDetection returns a copy of the image with its edges highlighted.
+func EdgeDetection(src image.Image, radius float64) *image.RGBA {
+	if radius <= 0 {
+		return image.NewRGBA(src.Bounds())
+	}
+
+	length := int(math.Ceil(2*radius + 1))
+	k := convolution.NewKernel(length, length)
+
+	for x := 0; x < length; x++ {
+		for y := 0; y < length; y++ {
+			v := -1.0
+			if x == length/2 && y == length/2 {
+				v = float64(length*length) - 1
+			}
+			k.Matrix[y*length+x] = v
+
+		}
+	}
+	return convolution.Convolve(src, k, &convolution.Options{Bias: 0, Wrap: false, KeepAlpha: true})
+}
