@@ -1,7 +1,10 @@
-.container {}
+.container {
+    width: 100%;
+}
 .content {
     display: flex;
-    flex-direction: column;
+    justify-content: space-around;
+    flex-wrap: wrap;
 }
 .start-container {}  
 .result-container {}
