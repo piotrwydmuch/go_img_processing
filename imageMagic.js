@@ -16,7 +16,7 @@ let DoMagickCall = async function (command) {
     let firstOutputImage = processedFiles[0]
     transformedImage.src = URL.createObjectURL(firstOutputImage['blob'])
     let endTime = performance.now();
-    console.log(`%c imageMagic done. t: ${(endTime - startTime) / 1000}s`, 'color: #008000')
+    console.log(`%c imageMagic done. t: ${(endTime - startTime)}ms`, 'color: #008000')
 };
 
 magicCallBtnBlur.addEventListener("click", () => {
