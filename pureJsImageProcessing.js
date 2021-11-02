@@ -5,6 +5,5 @@ let sourceImage = document.getElementById('source-img');
 let pureJsCallBtnBlur = document.getElementById('pure-js-button')
 
 pureJsCallBtnBlur.addEventListener("click", () => {
-  console.log("dupa")
   StackBlur.image(sourceImage, transformedImage, 10, true);
 })
