@@ -28,6 +28,7 @@
 		}
     </script>
     <script type="module" src="./imageMagic.js"></script>
+    <script type="module" src="./pureJsImageProcessing.js"></script>
 </head>
 <body>
 <div class="container">
@@ -64,6 +65,21 @@
             <div class="result-container">
                 <h2>Result imge:</h2>
                 <img id="transformed-image" class="image" style="width: 300px;"/>
+            </div>
+        </div>
+        <div class="pure-js">
+            <h2>JavaScript</h2>
+            <div class="btn-container">
+                <button id="pure-js-button">make blur</button>
+            </div>
+            <div class="start-container">
+                <h2>Start image:</h2>
+                <img class="" id="source-img" src="./lenna.png" alt="Start image" style="width: 300px;">
+            </div>
+            <div class="result-container">
+                <h2>Result imge:</h2>
+                <!-- <img id="transformed-image-js" class="image" style="width: 300px;"/> -->
+                <canvas id="transformed-image-js" style="width: 300px; height: 300px;" width="200" height="200"></canvas>
             </div>
         </div>
     </main>
