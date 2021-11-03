@@ -1,4 +1,4 @@
-import * as StackBlur from './node_modules/stackblur-canvas/dist/stackblur-es.min.js';
+import * as StackBlur from './stackblur.js';
 
 let transformedImage = document.getElementById('transformed-image-js');
 let sourceImage = document.getElementById('source-img');
