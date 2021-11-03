@@ -8,3 +8,8 @@
 }
 .start-container {}  
 .result-container {}
+
+#transformed-image-js {
+    width: 300px !important;
+    height: 300px !important;
+}
