@@ -1,3 +1,4 @@
+/* GENERAL */
 .container {
     width: 100%;
 }
@@ -6,9 +7,27 @@
     justify-content: space-around;
     flex-wrap: wrap;
 }
-.start-container {}  
-.result-container {}
+button {
+    border: none;
+    padding: 8px 12px;
+}
+button:hover {
+    cursor: pointer;
+}
 
+/* CPP - IMAGE MAGIC */
+#btn-cpp-2-machine-testing {
+    background: #8fbc8f;
+}
+#btn-cpp-2-machine-testing:hover {
+    background: #6f926f;
+}
+
+/* PURE JS */
+/* pure js processing need upgrade and fixes */
+.pure-js {
+    display: none;
+}
 #transformed-image-js {
     width: 300px !important;
     height: 300px !important;

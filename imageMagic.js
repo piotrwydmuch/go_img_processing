@@ -2,9 +2,13 @@ import * as Magick from 'https://knicknic.github.io/wasm-imagemagick/magickApi.j
 
 let magicCallBtnBlur = document.getElementById('btn-cpp-1')
 let magicCallBtnEdges = document.getElementById('btn-cpp-2')
+let magicCallMachineTesting = document.getElementById('btn-cpp-2-machine-testing')
 let transformedImage = document.getElementById('transformed-image');
 
-let DoMagickCall = async function (command) {
+let resultArray = [];
+
+let DoMagickCall = async function (command, index = 1 ) {
+    // performance.clearMarks(); // it have to be empty here !!
     let startTime = performance.now();
     let fetchedSourceImage = await fetch("lenna.png");
     let arrayBuffer = await fetchedSourceImage.arrayBuffer();
@@ -16,7 +20,9 @@ let DoMagickCall = async function (command) {
     let firstOutputImage = processedFiles[0]
     transformedImage.src = URL.createObjectURL(firstOutputImage['blob'])
     let endTime = performance.now();
-    console.log(`%c imageMagic done. t: ${(endTime - startTime)}ms`, 'color: #008000')
+    let performanceResult = endTime - startTime;
+    resultArray.push(performanceResult);
+    console.log(`%c ${index} imageMagic done. t: ${(performanceResult)}ms`, 'color: #008000');
 };
 
 magicCallBtnBlur.addEventListener("click", () => {
@@ -28,3 +34,23 @@ magicCallBtnEdges.addEventListener("click", () => {
     const command = ["convert", "srcFile.png", "-canny", "0x1+10%+20%", "out.png"];
     DoMagickCall(command);
 })
+
+magicCallMachineTesting.addEventListener("click", () => {
+    const command = ["convert", "srcFile.png", "-canny", "0x1+10%+20%", "out.png"];
+    async function machineTesting() {
+        for (let i = 1; i < 11; i++) {
+            DoMagickCall(command, i);
+        }
+        const result = await resolveAfter2Seconds();
+        console.log(result);
+    }
+    machineTesting();
+})
+
+function resolveAfter2Seconds() {
+    return new Promise(() => {
+      console.log("koniec")
+    });
+  }
+
+  
