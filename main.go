@@ -79,7 +79,7 @@ func UseGaussian(img image.Image) {
 	start := time.Now()
 	newImgRGBA := Gaussian(img, 9.0)
 	EditPhoto(newImgRGBA)
-	fmt.Println("t: ", time.Since(start))
+	fmt.Println("t: ", time.Since(start).Milliseconds(), "ms")
 
 }
 
@@ -87,7 +87,7 @@ func UseGrayscale(img image.Image) {
 	start := time.Now()
 	newImgRGBA := Grayscale(img)
 	EditPhoto(newImgRGBA)
-	fmt.Println("t: ", time.Since(start))
+	fmt.Println("t: ", time.Since(start).Milliseconds(), "ms")
 
 }
 
@@ -95,7 +95,7 @@ func UseInvert(img image.Image) {
 	start := time.Now()
 	newImgRGBA := Invert(img)
 	EditPhoto(newImgRGBA)
-	fmt.Println("t: ", time.Since(start))
+	fmt.Println("t: ", time.Since(start).Milliseconds(), "ms")
 
 }
 
@@ -103,7 +103,7 @@ func UseEdgeDetection(img image.Image) {
 	start := time.Now()
 	newImgRGBA := EdgeDetection(img, 1.0)
 	EditPhoto(newImgRGBA)
-	fmt.Println("t: ", time.Since(start))
+	fmt.Println("t: ", time.Since(start).Milliseconds(), "ms")
 
 }
 
