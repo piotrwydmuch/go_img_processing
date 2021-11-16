@@ -25,9 +25,9 @@ button:hover {
 
 /* PURE JS */
 /* pure js processing need upgrade and fixes */
-.pure-js {
-    /* display: none; */
-}
+/* .pure-js {
+    display: none;
+} */
 #transformed-image-js {
     width: 300px !important;
     height: 300px !important;

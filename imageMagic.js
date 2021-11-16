@@ -5,7 +5,7 @@ let magicCallBtnEdges = document.getElementById('btn-cpp-2')
 let magicCallMachineTesting = document.getElementById('btn-cpp-2-machine-testing')
 let transformedImage = document.getElementById('transformed-image');
 
-let resultArray = [];
+let resultArray;
 
 let DoMagickCall = async function (command, index = 1 ) {
     // performance.clearMarks(); // it have to be empty here !!
@@ -37,20 +37,31 @@ magicCallBtnEdges.addEventListener("click", () => {
 
 magicCallMachineTesting.addEventListener("click", () => {
     const command = ["convert", "srcFile.png", "-canny", "0x1+10%+20%", "out.png"];
+
     async function machineTesting() {
+        resultArray = [];
         for (let i = 1; i < 11; i++) {
-            DoMagickCall(command, i);
+          await DoMagickCall(command, i);
         }
-        const result = await resolveAfter2Seconds();
-        console.log(result);
-    }
+        console.log('Done!');
+        console.log(resultArray);
+
+        fetch("http://localhost:5000/save_data", {
+                method: 'POST',
+                mode: 'cors', // no-cors, *cors, same-origin
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "times": resultArray,
+                    "run_name": "run_xxx"
+                })
+            }).then((r) => {
+                console.log(r)
+            })
+      }
     machineTesting();
 })
 
-function resolveAfter2Seconds() {
-    return new Promise(() => {
-      console.log("koniec")
-    });
-  }
 
   
